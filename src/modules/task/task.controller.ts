@@ -16,14 +16,13 @@ export class TaskController {
   constructor(private taskSvc: TaskService) {}
 
   @Get()
-  public getTask(): any[] {
-    return this.taskSvc.listTask();
+  public async getTask(): Promise<any> {
+    return await this.taskSvc.listTask();
   }
 
   @Get(':id')
-  public getTaskById(@Param('id', ParseIntPipe) id: number): any {
-    console.log('Id:', { id });
-    return this.taskSvc.getTaskById(id);
+  public async getTaskById(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    return  await this.taskSvc.getTaskById(id);
   }
 
   @Post()
