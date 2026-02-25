@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -23,8 +24,8 @@ export class CreateTaskDto {
   descripcion: string;
 
   @IsNotEmpty()
-  @IsBoolean()
-  prioridad: boolean;
+  @IsInt()
+  prioridad: number;
 
   @IsNumber()
   @IsInt()
