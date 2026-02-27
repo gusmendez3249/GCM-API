@@ -16,13 +16,17 @@ import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { NotFoundError } from 'rxjs';
 import { Console } from 'console';
+import { Task } from './entities/task.entite';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 
 @Controller('api/task')
+@ApiTags('Task')
 export class TaskController {
   constructor(private taskSvc: TaskService) {}
 
   @Get()
-  public async getTask(): Promise<any> {
+  public async getTask(): Promise<Task[]> {
     return await this.taskSvc.listTask();
   }
 
@@ -30,9 +34,9 @@ export class TaskController {
   @HttpCode(200)
   public async getTaskById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<any> {
+  ): Promise<Task> {
     const result = await this.taskSvc.getTaskById(id);
-    console.log(result)
+    console.log(result);
     if (result == undefined) {
       //throw new NotFoundException(`Tarea con id ${id} no encontrada`)
       throw new HttpException(
@@ -46,30 +50,43 @@ export class TaskController {
   }
 
   @Post()
-  public insertTask(@Body() task: CreateTaskDto) {
-      const result = this.taskSvc.insert(task);
+  @ApiOperation({ summary: 'inserta una tarea en la base de datos' })
+  public insertTask(@Body() task: CreateTaskDto): Promise<Task> {
+    const result = this.taskSvc.insert(task);
 
-      if (result == undefined) {
-        throw new HttpException(
-          "Tarea no registrada",
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+    if (result == undefined) {
+      throw new HttpException(
+        'Tarea no registrada',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
     return this.taskSvc.insert(task);
   }
 
   @Put('/:id')
-  public update(@Param('id', ParseIntPipe) id: number, @Body() task: any) {
-    console.log("Tarea a actualizar", task)
-
+  public update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() task: UpdateTaskDto,
+  ): Promise<Task> {
+    console.log('Tarea a actualizar', task);
 
     return this.taskSvc.update(id, task);
   }
 
   @Delete(':id')
-  public delete(@Param('id', ParseIntPipe) id: number) {
+  public async delete(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
     console.log(id);
-    return this.taskSvc.delete(id);
+
+    const result = await this.taskSvc.delete(id);
+
+    console.log(result)
+
+    if (!result) {
+      //Devolver un código de estado
+      throw new HttpException("No se puede eliminar la tarea", HttpStatus.NOT_FOUND)
+    }
+
+    return result;
   }
 }
