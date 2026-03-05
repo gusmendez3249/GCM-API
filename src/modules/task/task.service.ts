@@ -4,11 +4,22 @@ import { Connection } from 'mysql2';
 import { Task } from './entities/task.entite';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Result } from 'pg';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class TaskService {
-  constructor(@Inject('MYSQL_CONNECTION') private db: any) {}
+  constructor(
+    @Inject('MYSQL_CONNECTION') private db: any,
+    private prisma: PrismaService
+  ) {}
 
+  public async getTasks(): Promise<Task[]>{
+    const tasks = await this .prisma.task.findMany();
+
+    console.log(tasks);
+    
+    return tasks;
+  }
   private task: any[] = [];
 
   async listTask(): Promise<Task[]> {

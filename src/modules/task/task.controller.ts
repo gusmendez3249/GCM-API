@@ -25,7 +25,13 @@ import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 export class TaskController {
   constructor(private taskSvc: TaskService) {}
 
+   @Get('prisma')
+  public async getTaskPrisma(): Promise<Task[]> {
+    return await this.taskSvc.getTasks();
+  }
+
   @Get()
+  
   public async getTask(): Promise<Task[]> {
     return await this.taskSvc.listTask();
   }
