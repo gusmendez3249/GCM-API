@@ -22,62 +22,34 @@ export class TaskService {
   }
   private task: any[] = [];
 
-  async listTask(): Promise<Task[]> {
-    const query = `SELECT * FROM tasks;`;
-    const [result]: any = await this.db.query(query);
+  async getTaskById(id: number): Promise<Task | null> {
+    const task = await this.prisma.task.findUnique({
+      where: { id }
+    });
 
-    return result;
+    return task;
   }
-  async getTaskById(id: number): Promise<Task> {
-    const query = `SELECT * FROM tasks WHERE id = '${id}'`;
-    const [result]: any = await this.db.query(query);
-
-    return result[0];
-  }
+  
   async insert(task: CreateTaskDto): Promise<Task> {
-    //Agregar query
-    const sql = `INSERT INTO tasks (name, description, priority, user_id) VALUES('${task.nombre}', '${task.descripcion}',${task.prioridad}, ${task.user_id})`;
 
-    const [result] = await this.db.query(sql);
-
-    const insertId = result.insertId;
-
-    const row = await this.getTaskById(insertId);
-
-    return row;
+    return await this.prisma.task.create({
+      data: task, 
+    });
   }
 
   async update(id: number, taskUpdate: UpdateTaskDto): Promise<Task> {
-    const task = await this.getTaskById(id);
+    const task = await this.prisma.task.update({
+      where: { id },
+      data: taskUpdate
+    });
 
-    task.name = taskUpdate.nombre ?? task.name;
-    task.description = taskUpdate.descripcion ?? task.description;
-    task.priority = taskUpdate.prioridad ?? task.priority;
-
-    const query = `
-      UPDATE tasks
-      SET name = ?, description = ?, priority = ?
-      WHERE id = ?;
-    `;
-
-    const values = [task.name, task.description, task.priority, id];
-
-    const [result]: any = await this.db.query(query, values);
-
-    console.log(result.affectedRows);
-
-    return await this.getTaskById(id);
+    return task;
   }
-  async delete(id: number): Promise<boolean> {
-    const query = `DELETE FROM tasks WHERE id = ${id}`;
-    const [result] = await this.db.query(query);
+  async delete(id: number): Promise<Task> {
+    const task = await this.prisma.task.delete({
+      where: {id}
+    })
 
-    console.log(result.affectedRows);
-
-    if (result.affectedRows > 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return task
   }
 }

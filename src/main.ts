@@ -43,3 +43,6 @@ bootstrap();
 //! npm i @nestjs/swagger
 
 //! git commit -a -m "fix: Correcion del CRUD y uso del swagger"
+
+//! git commit -a -m "fix: Uso de Prisma y corrección de crud"
+

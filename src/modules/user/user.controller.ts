@@ -12,36 +12,36 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { TaskService } from './task.service';
-import { CreateTaskDto } from './dto/create-task.dto';
+import { UserService } from './user.service';
+import { CreateUserDto } from './dto/create-user.dto';
 import { NotFoundError } from 'rxjs';
 import { Console } from 'console';
-import { Task } from './entities/task.entite';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { User } from './entities/user.entitie';
+import { UpdateUserDto } from './dto/update-task.dto';
 import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 
-@Controller('api/task')
-@ApiTags('Task')
-export class TaskController {
-  constructor(private taskSvc: TaskService) {}
+@Controller('api/user')
+@ApiTags('User')
+export class UserController {
+  constructor(private userSvc: UserService) {}
 
    @Get('prisma')
-  public async getTaskPrisma(): Promise<Task[]> {
-    return await this.taskSvc.getTasks();
+  public async getUserPrisma(): Promise<User[]> {
+    return await this.userSvc.getUsers();
   }
 
   @Get()
   
-  public async getTask(): Promise<Task[]> {
-    return await this.taskSvc.getTasks();
+  public async getUser(): Promise<User[]> {
+    return await this.userSvc.getUsers();
   }
 
   @Get(':id')
   @HttpCode(200)
-  public async getTaskById(
+  public async getUserById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Task> {
-    const result = await this.taskSvc.getTaskById(id);
+  ): Promise<User> {
+    const result = await this.userSvc.getUserById(id);
     console.log(result);
     if (result == undefined) {
       //throw new NotFoundException(`Tarea con id ${id} no encontrada`)
@@ -57,8 +57,8 @@ export class TaskController {
 
   @Post()
   @ApiOperation({ summary: 'inserta una tarea en la base de datos' })
-  public insertTask(@Body() task: CreateTaskDto): Promise<Task> {
-    const result = this.taskSvc.insert(task);
+  public insertUser(@Body() task: CreateUserDto): Promise<User> {
+    const result = this.userSvc.insert(task);
 
     if (result == undefined) {
       throw new HttpException(
@@ -67,23 +67,23 @@ export class TaskController {
       );
     }
 
-    return this.taskSvc.insert(task);
+    return this.userSvc.insert(task);
   }
 
   @Put('/:id')
   public update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() task: UpdateTaskDto,
-  ): Promise<Task> {
-    console.log('Tarea a actualizar', task);
+    @Body() user: UpdateUserDto,
+  ): Promise<User> {
+    console.log('Tarea a actualizar', user);
 
-    return this.taskSvc.update(id, task);
+    return this.userSvc.update(id, user);
   }
 
   @Delete(':id')
   public async delete(@Param('id', ParseIntPipe) id: number): Promise<Boolean> {
     try{
-      await this.taskSvc.delete(id);
+      await this.userSvc.delete(id);
     }
     catch(error){
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND)
