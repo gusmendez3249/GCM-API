@@ -4,7 +4,7 @@ import { Connection } from 'mysql2';
 import { Task } from './entities/task.entite';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Result } from 'pg';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/common/services/prisma.service';
 
 @Injectable()
 export class TaskService {
