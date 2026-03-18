@@ -11,6 +11,8 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,9 +22,11 @@ import { User } from './entities/user.entitie';
 import { UpdateUserDto } from './dto/update-task.dto';
 import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { UtilService } from 'src/common/services/util.service';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller('api/user')
 @ApiTags('User')
+@UseGuards(AuthGuard)
 export class UserController {
   constructor(
     private userSvc: UserService,
@@ -30,27 +34,28 @@ export class UserController {
   ) {}
 
    @Get('prisma')
-  public async getUserPrisma(): Promise<User[]> {
-    return await this.userSvc.getUsers();
+  public async getUserPrisma(@Req() req: any): Promise<User[]> {
+    return await this.userSvc.getUsers(req.user?.id);
   }
 
   @Get()
   
-  public async getUser(): Promise<User[]> {
-    return await this.userSvc.getUsers();
+  public async getUser(@Req() req: any): Promise<User[]> {
+    return await this.userSvc.getUsers(req.user?.id);
   }
 
-  @Get(':id')
+  @Get('profile')
   @HttpCode(200)
   public async getUserById(
-    @Param('id', ParseIntPipe) id: number,
+    @Req() req: any,
   ): Promise<User> {
+    const id = req.user.id;
     const result = await this.userSvc.getUserById(id);
     console.log(result);
     if (result == undefined) {
       //throw new NotFoundException(`Tarea con id ${id} no encontrada`)
       throw new HttpException(
-        `Tarea con id ${id} no encontrada`,
+        `Usuario con id ${id} no encontrado`,
         HttpStatus.NOT_FOUND,
       );
     }

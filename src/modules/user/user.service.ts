@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Connection } from 'mysql2';
 import { User } from './entities/user.entitie';
@@ -13,8 +13,10 @@ export class UserService {
     private prisma: PrismaService
   ) {}
 
-  public async getUsers(): Promise<User[]>{
-    const user = await this .prisma.user.findMany({
+  public async getUsers(excludeId?: number): Promise<User[]>{
+    const whereClause = excludeId ? { id: { not: excludeId } } : {};
+    const user = await this.prisma.user.findMany({
+      where: whereClause,
       orderBy:[{name: "asc"}],
       select: {
         id: true,
@@ -54,18 +56,24 @@ export class UserService {
     return user.tasks;
   }
   async insert(user: CreateUserDto): Promise<User> {
-
-    return await this.prisma.user.create({
-      data: user, 
-      select: {
-        id: true,
-        name: true,
-        lastname: true,
-        username: true,
-        created_at: true,
-        tasks: true, 
-      },
-    });
+    try {
+      return await this.prisma.user.create({
+        data: user, 
+        select: {
+          id: true,
+          name: true,
+          lastname: true,
+          username: true,
+          created_at: true,
+          tasks: true, 
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('El nombre de usuario ya está en uso');
+      }
+      throw error;
+    }
   }
 
 async update(id: number, userUpdate: UpdateUserDto): Promise<User> {
