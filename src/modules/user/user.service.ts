@@ -99,4 +99,28 @@ async update(id: number, userUpdate: UpdateUserDto): Promise<User> {
     }
   }
 
+    // Busca por username e incluye password para validación
+  async findByUsername(username: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        username: true,
+        password: true, 
+        created_at: true,
+      },
+    });
+  }
+
+  // Guarda el refreshToken en la DB
+  async saveRefreshToken(id: number, refreshToken: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { refreshToken },
+    });
+  }
+
+
 }

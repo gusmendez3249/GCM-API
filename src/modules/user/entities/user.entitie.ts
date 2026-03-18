@@ -4,5 +4,6 @@ export class User {
     lastname: string;
     username: string;
     password?: string ;
+    refreshToken?: string; 
     created_at: Date;
 }
