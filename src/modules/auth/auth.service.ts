@@ -32,7 +32,7 @@ export class AuthService {
     };
 
     // 4. Generar tokens
-    const accessToken = await this.utilService.generateToken(payload, '60s');
+    const accessToken = await this.utilService.generateToken(payload, '1h');
     const refreshToken = await this.utilService.generateToken(payload, '7d');
 
     // 5. Guardar refreshToken en la DB
@@ -76,7 +76,7 @@ export class AuthService {
         created_at: user.created_at, 
       };
 
-      const accessToken = await this.utilService.generateToken(newPayload, '60s');
+      const accessToken = await this.utilService.generateToken(newPayload, '1h');
       const refreshToken = await this.utilService.generateToken(newPayload, '7d');
 
       await this.usersService.saveRefreshToken(user.id, refreshToken);

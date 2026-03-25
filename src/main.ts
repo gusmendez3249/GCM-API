@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AllExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,7 @@ async function bootstrap() {
     }),
   );
 
+  app.useGlobalFilters(new AllExceptionFilter());
   //Configuración de swagger
   const config = new DocumentBuilder()
     .setTitle('API con vulnerabilidad de seguridad')
@@ -46,3 +48,7 @@ bootstrap();
 
 //! git commit -a -m "fix: Uso de Prisma y corrección de crud"
 
+// npx prisma generate  
+//npx prisma migrate dev --name init
+
+// git commit -a -m "fix: Uso de custom errors, correccion de sesion en CRUD tareas"

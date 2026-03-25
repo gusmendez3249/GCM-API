@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Connection } from 'mysql2';
 import { Task } from './entities/task.entite';
@@ -13,8 +13,10 @@ export class TaskService {
     private prisma: PrismaService
   ) {}
 
-  public async getTasks(): Promise<Task[]>{
-    const tasks = await this .prisma.task.findMany();
+  public async getTasks(userId: number): Promise<Task[]>{
+    const tasks = await this.prisma.task.findMany({
+      where: { user_id: userId }
+    });
 
     console.log(tasks);
     
@@ -22,9 +24,9 @@ export class TaskService {
   }
   private task: any[] = [];
 
-  async getTaskById(id: number): Promise<Task | null> {
-    const task = await this.prisma.task.findUnique({
-      where: { id }
+  async getTaskById(id: number, userId: number): Promise<Task | null> {
+    const task = await this.prisma.task.findFirst({
+      where: { id, user_id: userId }
     });
 
     return task;
@@ -37,7 +39,12 @@ export class TaskService {
     });
   }
 
-  async update(id: number, taskUpdate: UpdateTaskDto): Promise<Task> {
+  async update(id: number, userId: number, taskUpdate: UpdateTaskDto): Promise<Task> {
+    const existing = await this.getTaskById(id, userId);
+    if (!existing) {
+      throw new NotFoundException('Task not found or unauthorized');
+    }
+
     const task = await this.prisma.task.update({
       where: { id },
       data: taskUpdate
@@ -45,7 +52,12 @@ export class TaskService {
 
     return task;
   }
-  async delete(id: number): Promise<Task> {
+  async delete(id: number, userId: number): Promise<Task> {
+    const existing = await this.getTaskById(id, userId);
+    if (!existing) {
+      throw new NotFoundException('Task not found or unauthorized');
+    }
+
     const task = await this.prisma.task.delete({
       where: {id}
     })
