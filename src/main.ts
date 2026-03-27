@@ -52,3 +52,11 @@ bootstrap();
 //npx prisma migrate dev --name init
 
 // git commit -a -m "fix: Uso de custom errors, correccion de sesion en CRUD tareas"
+
+//elegir un framework adecuado angular material, react cmd3, tailwind css
+//Utilizar guias de diseño para UX, IX, estandarizar
+//Revisar estructura de codigo, logica, bien segmentado, utilizar template,
+//de forma abstracta y de calidad
+
+
+// git commit -a -m "bug: Corrección de auth y creación de rutas (refresh,logout) "

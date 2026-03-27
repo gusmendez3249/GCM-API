@@ -14,6 +14,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { AuthService } from './auth.service';
 import { ApiOperation } from '@nestjs/swagger';
 import { AuthDto } from './dto/login.user.dto';
+import { AppException } from 'src/common/exceptions/app.exception';
 
 @Controller('api/auth')
 export class AuthController {
@@ -80,24 +81,36 @@ export class AuthController {
   @ApiOperation({
     summary: 'Renueva el token de acceso usando el RefreshToken',
   })
-  public async refreshToken(@Body('refreshToken') refreshToken: string) {
+  public async refrescarToken(@Body('refreshToken') refreshToken: string) {
     if (!refreshToken) throw new UnauthorizedException('RefreshToken no proporcionado');
     return this.authSvc.refreshToken(refreshToken);
   }
 
   @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthGuard)
+  public async logout(@Req() request: any) {
+    const session = request.user;
+    const user = await this.authSvc.updateHash(session.id, null);
+    return user;
+  }
+
+  @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Cierra sesión eliminando el RefreshToken de la DB',
-  })
-  public async logout(@Headers('authorization') authHeader: string) {
-    if (!authHeader) throw new UnauthorizedException('Token no proporcionado');
-    const token = authHeader.split(' ')[1];
-    
-    // Obtenemos el profile para sacar el ID y eliminar el refresh token.
-    // Si el token expiró, no podrá hacer logout de manera normal, pero en muchos sistemas el logout en backend limpio se asume con token valido.
-    const user = await this.authSvc.getProfile(token);
-    return this.authSvc.logout(user.id);
+  @UseGuards(AuthGuard)
+  public async refreshToken(@Req() req: any){
+    //Obtener el usuario en sesión
+    const userSesion = req.user;
+    const user = await this.authSvc.getUserById(userSesion.id);
+    if(!user || !user.hash) throw new AppException('Acceso denegado', HttpStatus.FORBIDDEN,'0');
+
+    //Comparar el token recibido con el token guardado
+    if(userSesion.hash != user.hash) throw new AppException('Token inválido', HttpStatus.FORBIDDEN,'0');    
+    //Si el token es valido se generan nuevos tokens
+    return {
+      accessToken: '',
+      refreshToken: ''
+    }
   }
 }
 

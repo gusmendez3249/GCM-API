@@ -35,10 +35,14 @@ export class AuthService {
     const accessToken = await this.utilService.generateToken(payload, '1h');
     const refreshToken = await this.utilService.generateToken(payload, '7d');
 
-    // 5. Guardar refreshToken en la DB
+    // 5. Hashear el refreshToken y guardarlo en el campo hash
+    const hash = await this.utilService.hash(refreshToken);
+    await this.usersService.saveHash(user.id, hash);
+
+    // 6. Guardar refreshToken en la DB
     await this.usersService.saveRefreshToken(user.id, refreshToken);
 
-    return { accessToken, refreshToken };
+    return { accessToken, hash };
   }
 
   async getProfile(token: string) {
@@ -95,5 +99,13 @@ export class AuthService {
 
   private async checkPassword(plain: string, hashed: string): Promise<boolean> {
     return bcrypt.compare(plain, hashed);
+  }
+
+  public async getUserById(id: number) {
+    return this.usersService.getUserById(id);
+  }
+
+  public async updateHash(user_id: number, hash: string | null): Promise<void> {
+    await this.usersService.saveHash(user_id, hash);
   }
 }

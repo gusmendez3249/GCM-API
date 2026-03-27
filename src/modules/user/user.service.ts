@@ -130,5 +130,13 @@ async update(id: number, userUpdate: UpdateUserDto): Promise<User> {
     });
   }
 
+  // Guarda el hash en la DB
+  async saveHash(id: number, hash: string | null): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { hash },
+    });
+  }
+
 
 }
