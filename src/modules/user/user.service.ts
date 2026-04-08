@@ -24,7 +24,8 @@ export class UserService {
         lastname: true,
         username: true,
         password: false,
-        created_at: true
+        created_at: true,
+        rol: { select: { id: true, description: true } }
       }  
     });
     
@@ -41,7 +42,8 @@ export class UserService {
         lastname: true,
         username: true,
         created_at: true,
-        tasks: true, 
+        tasks: true,
+        rol: { select: { id: true, description: true } },
       },
     });
   }
@@ -57,17 +59,22 @@ export class UserService {
   }
   async insert(user: CreateUserDto): Promise<User> {
     try {
+      const { rol_id, ...rest } = user;
       return await this.prisma.user.create({
-        data: user, 
+        data: {
+          ...rest,
+          ...(rol_id ? { rol: { connect: { id: rol_id } } } : {}),
+        },
         select: {
           id: true,
           name: true,
           lastname: true,
           username: true,
           created_at: true,
-          tasks: true, 
+          tasks: true,
+          rol: { select: { id: true, description: true } },
         },
-      });
+      }) as unknown as User;
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ConflictException('El nombre de usuario ya está en uso');
@@ -76,25 +83,32 @@ export class UserService {
     }
   }
 
+
 async update(id: number, userUpdate: UpdateUserDto): Promise<User> {
     try {
+      const { rol_id, ...rest } = userUpdate;
       const user = await this.prisma.user.update({
         where: { id },
-        data: userUpdate,
+        data: {
+          ...rest,
+          ...(rol_id !== undefined ? { rol: { connect: { id: rol_id } } } : {}),
+        },
         select: {
           id: true,
           name: true,
           lastname: true,
           username: true,
           created_at: true,
-          tasks: true, 
-      },
+          tasks: true,
+          rol: { select: { id: true, description: true } },
+        },
       });
-      return user;
+      return user as unknown as User;
     } catch (error) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
   }
+
 
   async delete(id: number): Promise<boolean> {
     try {

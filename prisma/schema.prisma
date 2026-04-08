@@ -16,32 +16,44 @@ generator client {
 }
 
 model Rol {
-  id Int @default(autoincrement())@id
+  id          Int @default(autoincrement())@id
   description String @db.VarChar(200)
-  status Boolean 
-  users User[]
+  status      Boolean 
+  users       User[]
 }
 
 model User {
-  id Int @default(autoincrement()) @id
-  name String @db.VarChar(200)
-  lastname String @db.VarChar(250)
-  username String @db.VarChar(100) @unique
-  password String
-  hash String?
+  id           Int @default(autoincrement()) @id
+  name         String @db.VarChar(200)
+  lastname     String @db.VarChar(250)
+  username     String @db.VarChar(100) @unique
+  password     String
+  hash         String?
   refreshToken String? @db.Text
-  created_at DateTime @default(now())
-  rol_id Int ?
-  rol Rol ? @relation(fields: [rol_id], references: [id]) 
+  created_at   DateTime @default(now())
+  rol_id       Int ?
+  rol          Rol ? @relation(fields: [rol_id], references: [id]) 
   tasks Task[]
+  logs         Logs[]
 }
 
 model Task {
-  id Int @default(autoincrement()) @id
-  name String @db.VarChar(150)
+  id          Int @default(autoincrement()) @id
+  name        String @db.VarChar(150)
   description String @db.VarChar(200)
-  priority Boolean
-  created_at DateTime @default(now())
-  user_id Int
+  priority    Boolean
+  created_at  DateTime @default(now())
+  user_id     Int
   user User @relation(fields: [user_id], references: [id])
+}
+
+model Logs {
+  id          Int      @default(autoincrement()) @id
+  statusCode  Int
+  timestamp   DateTime @default(now())
+  path        String?
+  error       String   @db.MediumText
+  errorCode   String?  @db.MediumText
+  session_id  Int?
+  user        User?    @relation(fields: [session_id], references: [id])
 }

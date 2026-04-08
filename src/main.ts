@@ -8,6 +8,15 @@ import { AllExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Seguridad: CORS restringido solo al origen del frontend
+  // En producción reemplazar por el dominio real
+  app.enableCors({
+    origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false,
+  });
+
   //Pipe para realizar la validación de forma global
   app.useGlobalPipes(
     new ValidationPipe({
@@ -15,7 +24,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new AllExceptionFilter());
+
   //Configuración de swagger
   const config = new DocumentBuilder()
     .setTitle('API con vulnerabilidad de seguridad')

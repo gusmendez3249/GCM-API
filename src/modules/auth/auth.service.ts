@@ -42,7 +42,7 @@ export class AuthService {
     // 6. Guardar refreshToken en la DB
     await this.usersService.saveRefreshToken(user.id, refreshToken);
 
-    return { accessToken, hash };
+    return { accessToken, refreshToken };
   }
 
   async getProfile(token: string) {

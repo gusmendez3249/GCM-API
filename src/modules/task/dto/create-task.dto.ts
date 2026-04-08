@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
-  isString,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -31,6 +30,7 @@ export class CreateTaskDto {
   @ApiProperty({ description: 'priority', example: 'True' })
   priority: boolean;
 
+  @IsOptional()
   @IsNumber()
   @IsInt()
   @ApiProperty({ description: 'user_id', example: '1' })

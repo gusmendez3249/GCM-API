@@ -1,13 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean,
-  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  isString,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -20,7 +17,7 @@ export class UpdateUserDto {
   @MinLength(3)
   @MaxLength(100)
   @ApiProperty({ description: 'name', example: 'Gustavo' })
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsString({ message: 'Los apellidos son una cadena' })
@@ -28,7 +25,7 @@ export class UpdateUserDto {
   @MinLength(3)
   @MaxLength(250)
   @ApiProperty({ description: 'lastname', example: 'Cruz Mendez' })
-  lastname: string;
+  lastname?: string;
 
   @IsOptional()
   @IsString({ message: 'El nombre de usuario es una cadena' })
@@ -36,7 +33,7 @@ export class UpdateUserDto {
   @MinLength(3)
   @MaxLength(250)
   @ApiProperty({ description: 'username', example: 'Gus' })
-  username: string;
+  username?: string;
 
   @IsOptional()
   @IsString({ message: 'La contraseña es una cadena' })
@@ -44,5 +41,11 @@ export class UpdateUserDto {
   @MinLength(3)
   @MaxLength(250)
   @ApiProperty({ description: 'password', example: '1234w4' })
-  password: string;
+  password?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @IsInt()
+  @ApiProperty({ description: 'rol_id', example: 1 })
+  rol_id?: number;
 }
