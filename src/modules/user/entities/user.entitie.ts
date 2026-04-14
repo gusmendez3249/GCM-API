@@ -5,6 +5,7 @@ export class User {
     username: string;
     hash?: string | null | undefined;
     password?: string ;
-    refreshToken?: string; 
+    refreshToken?: string;
     created_at: Date;
+    rol_id?: number | null;
 }

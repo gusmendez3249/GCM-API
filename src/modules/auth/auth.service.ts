@@ -29,6 +29,7 @@ export class AuthService {
       name: user.name,
       lastname: user.lastname,
       created_at: user.created_at, 
+      rol_id: user.rol_id,
     };
 
     // 4. Generar tokens
@@ -78,6 +79,7 @@ export class AuthService {
         name: user.name,
         lastname: user.lastname,
         created_at: user.created_at, 
+        rol_id: user.rol_id,
       };
 
       const accessToken = await this.utilService.generateToken(newPayload, '1h');

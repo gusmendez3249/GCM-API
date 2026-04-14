@@ -39,7 +39,6 @@ export class UserController {
   }
 
   @Get()
-  
   public async getUser(@Req() req: any): Promise<User[]> {
     return await this.userSvc.getUsers(req.user?.id);
   }
