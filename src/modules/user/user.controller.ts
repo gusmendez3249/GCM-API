@@ -81,11 +81,15 @@ export class UserController {
 
 
   @Put('/:id')
-  public update(
+  public async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() user: UpdateUserDto,
   ): Promise<User> {
     console.log('User a actualizado', user);
+
+    if (user.password) {
+      user.password = await this.utilSvc.hash(user.password);
+    }
 
     return this.userSvc.update(id, user);
   }

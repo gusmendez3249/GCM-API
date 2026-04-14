@@ -12,21 +12,21 @@ import {
 
 export class CreateTaskDto {
   @IsString({ message: 'El nombre debe de ser una cadena' })
-  @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(100)
+  @IsNotEmpty({ message: 'El nombre es requerido' })
+  @MinLength(3, { message: 'El nombre debe tener al menos 3 caracteres' })
+  @MaxLength(100, { message: 'El nombre no debe exceder 100 caracteres' })
   @ApiProperty({ description: 'name', example: 'Calculo' })
   name: string;
 
   @IsString({ message: 'La descripción es una cadena' })
-  @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(250)
+  @IsNotEmpty({ message: 'La descripción es requerida' })
+  @MinLength(3, { message: 'La descripción debe tener al menos 3 caracteres' })
+  @MaxLength(250, { message: 'La descripción no debe exceder 250 caracteres' })
   @ApiProperty({ description: 'description', example: 'Calculo del Semetre 2' })
   description: string;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'La prioridad es requerida' })
+  @IsBoolean({ message: 'La prioridad debe ser un valor booleano' })
   @ApiProperty({ description: 'priority', example: 'True' })
   priority: boolean;
 
